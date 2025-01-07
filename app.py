@@ -7,11 +7,11 @@ from common.metrics import setup_metrics
 # Initialize logging and metrics
 setup_logging()
 
-# Initialize FastAPI app C:\Users\אלון אלימלך\AppDaPython37\Scripts
+# Initialize FastAPI app
 app = FastAPI()
 
 # Include DNS routes
-app.include_router(dns_router, prefix="/dns", tags=["DNS"])
+app.include_router(dns_router, prefix="/dns", tags=["DNS Crud Operations"])
 
 # Setup metrics
 setup_metrics(app)

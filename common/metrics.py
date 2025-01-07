@@ -27,6 +27,7 @@ def increment_delete_counter(record_name: str):
 
 start_time = time.time()
 
+
 def setup_metrics(app):
     """Initialize and expose Prometheus metrics endpoint"""
     metrics_app = make_asgi_app()
