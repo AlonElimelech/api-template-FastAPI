@@ -1,6 +1,7 @@
 from fastapi import APIRouter
-from dns.schemas import DNSRecordCreate, DNSRecordResponse
-from dns.service import create_dns_record, delete_dns_record
+from dns.schemas import DNSRecordCreate, DNSRecordResponse, DNSRecordUpdate
+from dns.service import create_dns_record, delete_dns_record, update_dns_record, get_dns_record
+
 router = APIRouter()
 
 @router.post("/", response_model=DNSRecordResponse)
@@ -10,3 +11,11 @@ async def create_dns(record: DNSRecordCreate):
 @router.delete("/{record_name}")
 async def delete_dns(record_name: str):
     return await delete_dns_record(record_name)
+
+@router.put("/{record_name}", response_model=DNSRecordResponse)
+async def update_dns(record_name: str, record: DNSRecordUpdate):
+    return await update_dns_record(record_name, record)
+
+@router.get("/{record_name}", response_model=DNSRecordResponse)
+async def get_dns(record_name: str):
+    return await get_dns_record(record_name)

@@ -11,7 +11,7 @@ setup_logging()
 app = FastAPI()
 
 # Include DNS routes
-app.include_router(dns_router, prefix="/dns", tags=["DNS Crud Operations"])
+app.include_router(dns_router, prefix="/dns", tags=["DNS CRUD Operations"])
 
 # Setup metrics
 setup_metrics(app)

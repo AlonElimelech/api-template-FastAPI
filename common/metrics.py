@@ -1,6 +1,12 @@
 from prometheus_client import Counter, start_http_server, make_asgi_app, Gauge
 import time
 
+dns_update_counter = Counter(
+    "dns_update_count",
+    "Number of DNS records updated",
+    ['record_name']
+)
+
 # Metrics for DNS service with labels
 dns_create_counter = Counter(
     "dns_create_count",
@@ -14,6 +20,12 @@ dns_delete_counter = Counter(
     ['record_name']  # Labels for DNS type and zone
 )
 
+dns_failure_counter = Counter(
+    "dns_failure_count",
+    "Number of failed DNS operations",
+    ['operation_type', 'record_name']
+)
+
 # Uptime metric
 uptime_gauge = Gauge("uptime_seconds", "Uptime in seconds")
 
@@ -25,8 +37,14 @@ def increment_delete_counter(record_name: str):
     """Increment delete counter with specific labels"""
     dns_delete_counter.labels(record_name=record_name).inc()
 
-start_time = time.time()
+def increment_update_counter(record_name: str):
+    """Increment update counter with specific labels"""
+    dns_update_counter.labels(record_name=record_name).inc()
 
+def increment_failure_counter(operation: str, record_name: str):
+    dns_failure_counter.labels(operation_type=operation, record_name=record_name).inc()
+
+start_time = time.time()
 
 def setup_metrics(app):
     """Initialize and expose Prometheus metrics endpoint"""
