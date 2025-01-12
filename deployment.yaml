@@ -1,0 +1,38 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: fastapi-app
+spec:
+  replicas: 3  # Set the number of replicas for high availability
+  selector:
+    matchLabels:
+      app: fastapi-app
+  template:
+    metadata:
+      labels:
+        app: fastapi-app
+    spec:
+      containers:
+      - name: fastapi-app
+        image: dns-api:3.0
+        ports:
+        - containerPort: 5000
+        resources:
+          limits:
+            cpu: "500m"  # Limit CPU usage
+            memory: "256Mi"  # Limit memory usage
+          requests:
+            cpu: "250m"
+            memory: "128Mi"
+        readinessProbe:  # Health check for readiness
+          httpGet:
+            path: /healthcheck  # Add a `/health` endpoint in your app
+            port: 5000
+          initialDelaySeconds: 1
+          periodSeconds: 10
+        livenessProbe:  # Health check for liveliness
+          httpGet:
+            path: /healthcheck
+            port: 5000
+          initialDelaySeconds: 1
+          periodSeconds: 10
