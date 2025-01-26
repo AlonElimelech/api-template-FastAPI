@@ -1,9 +1,11 @@
 # Description: This file contains the functions to create and delete DNS records.
-
+import common.awx_client as awx_client
 # The create_dns function creates a DNS record with the provided record name and IP address.
 async def create_dns(record_name: str, ip: str) -> str:
     print("create")
-    return "DNS record created successfully"
+    response = awx_client.launch_job()
+
+    return response.status_code
 
 # The delete_dns function deletes a DNS record with the provided record name.
 async def delete_dns(record_name: str) -> str:

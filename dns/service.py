@@ -11,7 +11,7 @@ async def create_dns_record(record) -> DNSRecordResponse:
         # Here is the implementation for creating DNS record by Domain services Team
         response = await create_dns(record.record_name, record.ip)
         increment_create_counter(record.record_name, record.ip)
-        return DNSRecordResponse(record_name=record.record_name, status= "created")
+        return DNSRecordResponse(record_name=record.record_name, status_code=response.status_code, status= "in progress")
     except Exception as e:
         logger.error(f"Failed to create DNS record: {str(e)}")
         increment_failure_counter("create", record.record_name)

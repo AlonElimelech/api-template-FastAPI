@@ -14,7 +14,9 @@ class DNSRecordCreate(BaseModel):
 
 class DNSRecordResponse(BaseModel):
     record_name: str = Field(..., max_length=15)
+    status_code: int
     status: str
+
 
 class DNSRecordUpdate(BaseModel):
     ip: str
