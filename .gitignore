@@ -1,0 +1,4 @@
+__pycache__\*
+**\__pycache__\*  # Ignore all __pycache__ directories
+.coverage
+
