@@ -1,62 +1,21 @@
-from prometheus_client import Counter, start_http_server, make_asgi_app, Gauge
+from prometheus_client import  Gauge
 import time
-
-dns_update_counter = Counter(
-    "dns_update_count",
-    "Number of DNS records updated",
-    ['record_name']
-)
-
-# Metrics for DNS service with labels
-dns_create_counter = Counter(
-    "dns_create_count",
-    "Number of DNS records created",
-    ['record_name', 'zone']  # Labels for DNS type and zone
-)
-
-dns_delete_counter = Counter(
-    "dns_delete_count", 
-    "Number of DNS records deleted",
-    ['record_name']  # Labels for DNS type and zone
-)
-
-dns_failure_counter = Counter(
-    "dns_failure_count",
-    "Number of failed DNS operations",
-    ['operation_type', 'record_name']
-)
+from fastapi import Request, FastAPI
+from starlette_exporter import PrometheusMiddleware, handle_metrics
 
 # Uptime metric
-uptime_gauge = Gauge("uptime_seconds", "Uptime in seconds")
-
-def increment_create_counter(record_name: str, zone: str):
-    """Increment create counter with specific labels"""
-    dns_create_counter.labels(record_name=record_name, zone=zone).inc()
-
-def increment_delete_counter(record_name: str):
-    """Increment delete counter with specific labels"""
-    dns_delete_counter.labels(record_name=record_name).inc()
-
-def increment_update_counter(record_name: str):
-    """Increment update counter with specific labels"""
-    dns_update_counter.labels(record_name=record_name).inc()
-
-def increment_failure_counter(operation: str, record_name: str):
-    dns_failure_counter.labels(operation_type=operation, record_name=record_name).inc()
-
+uptime_metrics = Gauge("uptime_seconds", "Uptime in seconds")
 start_time = time.time()
 
-def setup_metrics(app):
-    """Initialize and expose Prometheus metrics endpoint"""
-    metrics_app = make_asgi_app()
-    start_time = time.time()
-        # Define a middleware to update the uptime gauge dynamically
-    async def metrics_middleware(scope, receive, send):
-        if scope["type"] == "http" and scope["root_path"] == "/metrics":
-            # Update the uptime gauge before the metrics are served
-            uptime_gauge.set(time.time() - start_time)
-        # Pass the request to the Prometheus ASGI app
-        await metrics_app(scope, receive, send)
-    # Mount the metrics endpoint with the middleware
-    app.mount("/metrics", metrics_middleware)
+def setup_metrics(app: FastAPI):
+    app.add_middleware(PrometheusMiddleware, app_name="dns")
+    app.add_route("/metrics", custom_metrics)
+
+
+def custom_metrics(request: Request):
+    """Expose metrics with added uptime tracking."""
+    uptime_metrics.set(time.time() - start_time)
+    return handle_metrics(request)
+
+
 
