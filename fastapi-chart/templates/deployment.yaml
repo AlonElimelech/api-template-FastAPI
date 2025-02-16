@@ -1,0 +1,39 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "dns-api.name" . }}-deployment
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      {{- include "dns-api.labels" . | nindent 6 }}
+  template:
+    metadata:
+      labels:
+        {{- include "dns-api.labels" . | nindent 8 }}
+    spec:
+      containers:
+      - name: fastapi-app
+        image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+        imagePullPolicy: {{ .Values.image.pullPolicy }}
+        ports:
+        - containerPort: {{ .Values.service.port }}
+        resources:
+          limits:
+            cpu: "500m"
+            memory: "256Mi"
+          requests:
+            cpu: "250m"
+            memory: "128Mi"
+        readinessProbe:
+          httpGet:
+            path: /healthcheck
+            port: {{ .Values.service.port }}
+          initialDelaySeconds: 1
+          periodSeconds: 10
+        livenessProbe:
+          httpGet:
+            path: /healthcheck
+            port: {{ .Values.service.port }}
+          initialDelaySeconds: 1
+          periodSeconds: 10

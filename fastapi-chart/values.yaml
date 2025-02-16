@@ -1,0 +1,10 @@
+replicaCount: 1
+
+image:
+  repository: dns-api
+  tag: "6.0"
+  pullPolicy: IfNotPresent
+
+service:
+  type: NodePort  # Can be ClusterIP, NodePort, or LoadBalancer
+  port: 5000
