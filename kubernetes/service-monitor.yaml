@@ -1,0 +1,19 @@
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  labels: 
+    app: fastapi-app  # This should match the label selector of your Service
+    release: my-prometheus-operator
+  name: fastapi-service-monitor
+  namespace: default  # Replace with your namespace
+spec:
+  selector:
+    matchLabels:
+      app: fastapi-app  # This should match the label selector of your Service
+  endpoints:
+    - port: http  # The port that exposes your /metrics endpoint (adjust if needed)
+      path: /metrics
+      interval: 30s  # Scrape every 30 seconds (adjust as needed)
+  namespaceSelector:
+    matchNames:
+      - default  # Replace with your namespace if necessary
