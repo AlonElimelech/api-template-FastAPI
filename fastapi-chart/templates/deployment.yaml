@@ -1,16 +1,17 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ include "dns-api.name" . }}-deployment
+  name: {{ include "api.name" . }}
+  namespace: {{include "api.namespaceName" .}}
 spec:
   replicas: {{ .Values.replicaCount }}
   selector:
     matchLabels:
-      {{- include "dns-api.labels" . | nindent 6 }}
+      {{- include "api.labels" . | nindent 6 }}
   template:
     metadata:
       labels:
-        {{- include "dns-api.labels" . | nindent 8 }}
+        {{- include "api.labels" . | nindent 8 }}
     spec:
       containers:
       - name: fastapi-app
@@ -29,11 +30,11 @@ spec:
           httpGet:
             path: /healthcheck
             port: {{ .Values.service.port }}
-          initialDelaySeconds: 1
-          periodSeconds: 10
+          initialDelaySeconds: 10
+          periodSeconds: 60
         livenessProbe:
           httpGet:
             path: /healthcheck
             port: {{ .Values.service.port }}
-          initialDelaySeconds: 1
-          periodSeconds: 10
+          initialDelaySeconds: 10
+          periodSeconds: 60

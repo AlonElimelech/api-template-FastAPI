@@ -1,10 +1,9 @@
 from fastapi.openapi.docs import get_swagger_ui_html
 from fastapi.openapi.utils import get_openapi
 from fastapi.staticfiles import StaticFiles
-from dns.settings import API_TITLE
 
 
-def swagger_initialize(app):
+def swagger_initialize(app, api_title):
     app.mount("/static", StaticFiles(directory="static"), name="static")
 
 
@@ -13,7 +12,7 @@ def swagger_initialize(app):
     async def custom_swagger_ui_html():
         return get_swagger_ui_html(
             openapi_url=app.openapi_url,
-            title=API_TITLE,
+            title=api_title,
             swagger_js_url="/static/swagger-ui-bundle.js",
             swagger_css_url="/static/swagger-ui.css",
             swagger_favicon_url="/static/favicon.png",

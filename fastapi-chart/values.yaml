@@ -1,10 +1,18 @@
+releasename: testapi
 replicaCount: 1
 
 image:
   repository: dns-api
-  tag: "6.0"
+  tag: "7.0"
   pullPolicy: IfNotPresent
 
 service:
-  type: NodePort  # Can be ClusterIP, NodePort, or LoadBalancer
+  type: NodePort
   port: 5000
+  portName: http
+
+servicemonitor:
+  enabled: true
+  interval: 30s
+  release: my-prometheus-operator
+
