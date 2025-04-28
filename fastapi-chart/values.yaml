@@ -16,3 +16,17 @@ servicemonitor:
   interval: 30s
   release: my-prometheus-operator
 
+env:
+  VAR_ONE: "value1"
+  VAR_TWO: "value2"
+  VAR_THREE: "value3"
+
+vault:
+  enabled: true
+  clusterSecretStore: vault-cluster-secret-store
+
+  secrets:
+    AWX_TOKEN:
+      vaultKey: ds
+      property: awx_token
+

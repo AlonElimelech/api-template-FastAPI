@@ -19,6 +19,13 @@ spec:
         imagePullPolicy: {{ .Values.image.pullPolicy }}
         ports:
         - containerPort: {{ .Values.service.port }}
+        envFrom:
+        - configMapRef:
+            name: {{ include "api.name" . }}-env
+        {{- if .Values.vault.enabled }}
+        - secretRef:
+            name: {{ include "api.name" . }}-secrets
+        {{- end }}
         resources:
           limits:
             cpu: "500m"
