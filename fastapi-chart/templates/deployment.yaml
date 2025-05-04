@@ -13,12 +13,20 @@ spec:
       labels:
         {{- include "api.labels" . | nindent 8 }}
     spec:
+      volumes:
+      - name: cert-path
+        secret:
+          secretName: {{ include "api.name" . }}-cert
       containers:
       - name: fastapi-app
         image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
         imagePullPolicy: {{ .Values.image.pullPolicy }}
         ports:
-        - containerPort: {{ .Values.service.port }}
+        - containerPort: 5000
+          name: http
+        volumeMounts:
+        - name: cert-path
+          mountPath: /ssl/certs
         envFrom:
         - configMapRef:
             name: {{ include "api.name" . }}-env
@@ -26,22 +34,20 @@ spec:
         - secretRef:
             name: {{ include "api.name" . }}-secrets
         {{- end }}
+        {{- with .Values.resources }}
         resources:
-          limits:
-            cpu: "500m"
-            memory: "256Mi"
-          requests:
-            cpu: "250m"
-            memory: "128Mi"
+          {{- toYaml .Values.resources | nindent 10 }}
+        {{- end }}
         readinessProbe:
           httpGet:
             path: /healthcheck
-            port: {{ .Values.service.port }}
+            port: 5000
           initialDelaySeconds: 10
           periodSeconds: 60
         livenessProbe:
           httpGet:
             path: /healthcheck
-            port: {{ .Values.service.port }}
+            port: 5000
           initialDelaySeconds: 10
           periodSeconds: 60
+      

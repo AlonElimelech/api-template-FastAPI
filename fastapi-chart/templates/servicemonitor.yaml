@@ -12,7 +12,7 @@ spec:
     matchLabels:
       {{- include "api.labels" . | nindent 6 }}
   endpoints:
-    - port: {{ .Values.service.portName }}  # The port that exposes your /metrics endpoint (adjust if needed)
+    - port: http  # The port that exposes your /metrics endpoint (adjust if needed)
       path: /metrics
       interval: 30s  # Scrape every 30 seconds (adjust as needed)
   namespaceSelector:
