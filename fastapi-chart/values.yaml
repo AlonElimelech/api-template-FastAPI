@@ -25,8 +25,13 @@ env:
   VAR_TWO: "value2"
   VAR_THREE: "value3"
 
-vault:
+# grafana
+grafana:
   enabled: true
+  labelForReloader: grafana_dashboard
+
+vault:
+  enabled: false
   clusterSecretStore: vault-cluster-secret-store
 
   secrets: []

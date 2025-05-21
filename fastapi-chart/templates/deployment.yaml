@@ -13,10 +13,12 @@ spec:
       labels:
         {{- include "api.labels" . | nindent 8 }}
     spec:
+      {{- if .Values.vault.enabled }}
       volumes:
       - name: cert-path
         secret:
           secretName: {{ include "api.name" . }}-cert
+      {{- end }}
       containers:
       - name: fastapi-app
         image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
@@ -24,9 +26,11 @@ spec:
         ports:
         - containerPort: 5000
           name: http
+        {{- if .Values.vault.enabled }}
         volumeMounts:
         - name: cert-path
           mountPath: /ssl/certs
+        {{- end }}
         envFrom:
         - configMapRef:
             name: {{ include "api.name" . }}-env
