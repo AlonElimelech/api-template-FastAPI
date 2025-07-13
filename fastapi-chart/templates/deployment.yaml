@@ -1,3 +1,5 @@
+{{- $root := . -}}
+
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -13,11 +15,33 @@ spec:
       labels:
         {{- include "api.labels" . | nindent 8 }}
     spec:
-      {{- if .Values.vault.enabled }}
+      {{- if not .Values.vault.enabled }}
       volumes:
-      - name: cert-path
+      {{- range .Values.extraConfigmapMounts }}
+      - name: {{ tpl .name $root }}
+        configMap:
+          name: {{ tpl .configMap $root }}
+          {{- with .optional }}
+          optional: {{ . }}
+          {{- end }}
+          {{- with .items }}
+          items:
+            {{- toYaml . | nindent 8 }}
+          {{- end }}
+      {{- end }}
+      {{- range .Values.extraSecretMounts }}
+      - name: {{ tpl .name $root }}
         secret:
-          secretName: {{ include "api.name" . }}-cert
+          secretName: {{ tpl .secretName $root }}
+          defaultMode: {{ .defaultMode }}
+          {{- with .optional }}
+          optional: {{ . }}
+          {{- end }}
+          {{- with .items }}
+          items:
+            {{- toYaml . | nindent 8 }}
+            {{- end }}
+      {{- end }}
       {{- end }}
       containers:
       - name: fastapi-app
@@ -26,10 +50,20 @@ spec:
         ports:
         - containerPort: 5000
           name: http
-        {{- if .Values.vault.enabled }}
+        {{- if not .Values.vault.enabled }}
         volumeMounts:
-        - name: cert-path
-          mountPath: /ssl/certs
+        {{- range .Values.extraConfigmapMounts }}
+        - name: {{ tpl .name $root }}
+          mountPath: {{ tpl .mountPath $root }}
+          subPath: {{ tpl (.subPath | default "") $root }}
+          readOnly: {{ .readOnly }}
+        {{- end }}
+        {{- range .Values.extraSecretMounts }}
+        - name: {{ tpl .name $root }}
+          mountPath: {{ tpl .mountPath $root }}
+          subPath: {{ tpl (.subPath | default "") $root }}
+          readOnly: {{ .readOnly }}
+        {{- end }}
         {{- end }}
         envFrom:
         - configMapRef:
@@ -54,4 +88,3 @@ spec:
             port: 5000
           initialDelaySeconds: 10
           periodSeconds: 60
-      

@@ -45,3 +45,26 @@ vault:
     #     key: ds/awx
     #     property: awx_host
 
+# Extra configmaps to mount in API pods
+# Values are templated.
+extraConfigmapMounts: 
+  - name: my-config
+    mountPath: /etc/config/extra/
+    subPath: extra-config.yaml
+    configMap: my-config
+    readOnly: true
+    optional: false
+  #   mountPath: /etc/grafana/ssl/
+  #   subPath: certificates.crt # (optional)
+  #   configMap: certs-configmap
+  #   readOnly: true
+  #   optional: false
+
+# Defines additional mounts with secrets. Secrets must be manually created in the namespace.
+extraSecretMounts: []
+  # - name: secret-files
+  #   mountPath: /etc/secrets
+  #   secretName: grafana-secret-files
+  #   readOnly: true
+  #   optional: false
+  #   subPath: ""
