@@ -16,8 +16,8 @@ def swagger_initialize(app, api_title, api_prefix):
             swagger_js_url=f"{api_prefix}/static/swagger-ui-bundle.js",
             swagger_css_url=f"{api_prefix}/static/swagger-ui.css",
             swagger_favicon_url=f"{api_prefix}/static/favicon.png",
+            #swagger_ui_parameters={"supportedSubmitMethods": [] } # remove "Try it out" button
         )
-    
     @app.get("/openapi.json", include_in_schema=False)
     async def get_open_api():
         return get_openapi(title="My API", version="1.0.0", routes=app.routes)
